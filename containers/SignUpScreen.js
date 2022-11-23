@@ -35,6 +35,9 @@ export default function SignInScreen({ setToken }) {
     if (!email || !username || !password || !confirmPassword) {
       setErrorMessage("Merci de remplir tous les champs");
     }
+    if (password !== confirmPassword) {
+      setErrorMessage("Les mots de passe ne sont pas identiques");
+    }
     if (email && username && description && password) {
       if (errorMessage !== null) {
         setErrorMessage(null);
@@ -56,6 +59,13 @@ export default function SignInScreen({ setToken }) {
         alert("Vous êtes connecté");
       } catch (error) {
         // console.log(error.response.status);
+        const message = error.response.data.error;
+        if (
+          message === "This username already has an account." ||
+          message === "This email already has an account."
+        ) {
+          setErrorMessage(message);
+        }
         if (error.response.status === 401) {
           setErrorMessage("Accès non autorisé");
         }
@@ -123,7 +133,6 @@ export default function SignInScreen({ setToken }) {
               } else if (!secureTextEntry) {
                 setSecureTextEntry(true);
               }
-              //
             }}
           >
             {secureTextEntry ? (
@@ -140,7 +149,7 @@ export default function SignInScreen({ setToken }) {
             style={styles.customInputSignIn}
             autoCapitalize="none"
             placeholder="confirm password"
-            secureTextEntry={secureTextEntry ? true : false}
+            secureTextEntry={secureTextEntry}
             onChangeText={(confirmPassword) => {
               setConfirmPassword(confirmPassword);
             }}
