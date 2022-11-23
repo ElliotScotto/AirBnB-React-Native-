@@ -4,7 +4,6 @@ import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view
 import { useNavigation } from "@react-navigation/core";
 import axios from "axios";
 import {
-  Alert,
   Button,
   Text,
   TextInput,
@@ -16,18 +15,15 @@ import {
   Platform,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { Feather } from "@expo/vector-icons";
 // import { TouchableHighlight } from "react-native-web";
 
 export default function SignInScreen({ setToken }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState(null);
+  const [secureTextEntry, setSecureTextEntry] = useState(true);
   const navigation = useNavigation();
-  //
-  const simpleAlertHandler = () => {
-    //function to make simple alert
-    alert("Bon retour parmi nous !");
-  };
   //
   const handlePress = async (event) => {
     event.preventDefault();
@@ -52,7 +48,7 @@ export default function SignInScreen({ setToken }) {
           setToken(token);
           // setToken(userToken);
           setId(id);
-          simpleAlertHandler();
+          alert("Votre inscription s'est bien déroulé");
         } else {
           setErrorMessage("Echec de connexion");
         }
@@ -99,14 +95,35 @@ export default function SignInScreen({ setToken }) {
             keyboardType={"email-address"}
           />
           <TextInput
-            style={styles.customInputSignIn}
+            style={[styles.customInputSignIn, styles.passwordInput]}
             autoCapitalize="none"
             placeholder="password"
-            secureTextEntry={true}
+            secureTextEntry={secureTextEntry}
             onChangeText={(password) => {
               setPassword(password);
             }}
           />
+          <TouchableOpacity
+            style={styles.eyeIcon}
+            onPress={() => {
+              if (secureTextEntry) {
+                setSecureTextEntry(false);
+              } else if (!secureTextEntry) {
+                setSecureTextEntry(true);
+              }
+              //
+            }}
+          >
+            {secureTextEntry ? (
+              <Text>
+                <Feather name="eye-off" size={24} color="black" />
+              </Text>
+            ) : (
+              <Text>
+                <Feather name="eye" size={24} color="black" />
+              </Text>
+            )}
+          </TouchableOpacity>
 
           <Text style={styles.ErrorMessageStyle}>{errorMessage}</Text>
           <TouchableHighlight
@@ -148,6 +165,8 @@ const styles = StyleSheet.create({
     marginBottom: 30,
     fontSize: 16,
   },
+  passwordInput: { position: "relative" },
+  eyeIcon: { position: "absolute", bottom: 265, right: 50 },
   button: {
     height: 60,
     width: "50%",

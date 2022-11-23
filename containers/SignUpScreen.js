@@ -4,7 +4,6 @@ import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view
 import { useNavigation } from "@react-navigation/core";
 import axios from "axios";
 import {
-  Alert,
   Button,
   Text,
   TextInput,
@@ -16,6 +15,7 @@ import {
   Platform,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { Feather } from "@expo/vector-icons";
 // import { TouchableHighlight } from "react-native-web";
 
 export default function SignInScreen({ setToken }) {
@@ -25,10 +25,16 @@ export default function SignInScreen({ setToken }) {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState(null);
+  const [secureTextEntry, setSecureTextEntry] = useState(true);
   const navigation = useNavigation();
+  //
+
   //
   const handlePress = async (event) => {
     event.preventDefault();
+    if (!email || !username || !password || !confirmPassword) {
+      setErrorMessage("Merci de remplir tous les champs");
+    }
     if (email && username && description && password) {
       if (errorMessage !== null) {
         setErrorMessage(null);
@@ -46,6 +52,8 @@ export default function SignInScreen({ setToken }) {
         );
         // setToken();
         console.log(response);
+        setToken(response.data.token);
+        alert("Vous êtes connecté");
       } catch (error) {
         // console.log(error.response.status);
         if (error.response.status === 401) {
@@ -102,16 +110,37 @@ export default function SignInScreen({ setToken }) {
             style={styles.customInputSignIn}
             autoCapitalize="none"
             placeholder="password"
-            secureTextEntry={true}
+            secureTextEntry={secureTextEntry}
             onChangeText={(password) => {
               setPassword(password);
             }}
           />
+          <TouchableOpacity
+            style={styles.eyeIcon}
+            onPress={() => {
+              if (secureTextEntry) {
+                setSecureTextEntry(false);
+              } else if (!secureTextEntry) {
+                setSecureTextEntry(true);
+              }
+              //
+            }}
+          >
+            {secureTextEntry ? (
+              <Text>
+                <Feather name="eye-off" size={24} color="black" />
+              </Text>
+            ) : (
+              <Text>
+                <Feather name="eye" size={24} color="black" />
+              </Text>
+            )}
+          </TouchableOpacity>
           <TextInput
             style={styles.customInputSignIn}
             autoCapitalize="none"
             placeholder="confirm password"
-            secureTextEntry={true}
+            secureTextEntry={secureTextEntry ? true : false}
             onChangeText={(confirmPassword) => {
               setConfirmPassword(confirmPassword);
             }}
@@ -125,7 +154,6 @@ export default function SignInScreen({ setToken }) {
           >
             <Text style={[styles.grey, styles.large]}>Sign up</Text>
           </TouchableHighlight>
-
           <TouchableOpacity
             onPress={() => {
               navigation.navigate("SignIn");
@@ -157,11 +185,13 @@ const styles = StyleSheet.create({
     marginBottom: 30,
     fontSize: 16,
   },
+  passwordInput: { position: "relative" },
+  eyeIcon: { position: "absolute", bottom: 245, right: 50 },
   descriptionInput: {
     height: 100,
     textAlignVertical: "top",
     borderColor: "#FFBAC0",
-    borderWidth: 1,
+    borderWidth: 2,
     borderStyle: "solid",
   },
   button: {
