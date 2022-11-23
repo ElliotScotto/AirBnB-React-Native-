@@ -45,7 +45,7 @@ export default function SignInScreen({ setToken }) {
           }
         );
         // setToken();
-        console.log("coucou");
+        console.log(response);
       } catch (error) {
         // console.log(error.response.status);
         if (error.response.status === 401) {
