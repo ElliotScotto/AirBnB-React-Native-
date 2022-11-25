@@ -5,7 +5,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 //ICONS
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { FontAwesome } from "@expo/vector-icons";
 import { Fontisto } from "@expo/vector-icons";
 //SCREENS
@@ -17,6 +17,8 @@ import SettingsScreen from "./containers/SettingsScreen";
 import SplashScreen from "./containers/SplashScreen";
 import RoomScreen from "./containers/RoomScreen";
 import AroundMeScreen from "./containers/AroundMeScreen";
+//COMPONENTS
+import Logo from "./components/Logo";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -92,15 +94,20 @@ export default function App() {
                   {() => (
                     <Stack.Navigator>
                       <Stack.Screen
-                        name="Home"
                         options={{
-                          title: "My App",
-                          headerStyle: { backgroundColor: "red" },
-                          headerTitleStyle: { color: "white" },
+                          title: "Home",
+                          headerTitle: () => <Logo size={"small"} />,
                         }}
-                      >
-                        {() => <HomeScreen />}
-                      </Stack.Screen>
+                        name="Home"
+                        component={HomeScreen}
+                      />
+                      <Stack.Screen
+                        name="Room"
+                        component={RoomScreen}
+                        options={{
+                          headerTitle: () => <Logo size={"small"} />,
+                        }}
+                      />
 
                       <Stack.Screen
                         name="Profile"
@@ -113,64 +120,40 @@ export default function App() {
                     </Stack.Navigator>
                   )}
                 </Tab.Screen>
-                {/* // // // */}
-                {/* // // // */}
-                {/* // AJOUT DE ROOMS DANS LA BOTTOM TAB// // */}
-                {/* // // // */}
-                {/* // // // */}
                 <Tab.Screen
-                  name="TabRoom"
-                  options={{
-                    tabBarLabel: "Rooms",
-                    tabBarIcon: ({ color, size }) => (
-                      <Fontisto name="room" size={24} color="grey" />
-                    ),
-                  }}
-                >
-                  {() => (
-                    <Stack.Navigator>
-                      <Stack.Screen
-                        name="room"
-                        options={{
-                          title: "Room",
-                        }}
-                      >
-                        {() => <RoomScreen setToken={setToken} />}
-                      </Stack.Screen>
-                    </Stack.Navigator>
-                  )}
-                </Tab.Screen>
-                {/* // // // */}
-                {/* // // // */}
-                {/* // // // */}
-                {/* // // // */}
-                {/* // // // */}
-                <Tab.Screen
-                  name="TabArroundMe"
+                  name="AroundMeTab"
                   options={{
                     tabBarLabel: "Around me",
                     tabBarIcon: ({ color, size }) => (
-                      <FontAwesome name="map-marker" size={24} color="grey" />
+                      <MaterialCommunityIcons
+                        name="map-marker-outline"
+                        size={size}
+                        color={color}
+                      />
                     ),
                   }}
                 >
                   {() => (
-                    <Stack.Navigator>
+                    <Stack.Navigator screenOptions={{ headerShown: true }}>
                       <Stack.Screen
-                        name="aroundme"
+                        name="TabAroundMe"
                         options={{
-                          title: "Around me",
+                          headerTitle: () => <Logo size={"small"} />,
                         }}
                       >
-                        {() => <AroundMeScreen setToken={setToken} />}
+                        {(props) => <AroundMeScreen {...props} />}
                       </Stack.Screen>
+
+                      <Stack.Screen
+                        name="Room"
+                        component={RoomScreen}
+                        options={{
+                          headerTitle: () => <Logo size={"small"} />,
+                        }}
+                      />
                     </Stack.Navigator>
                   )}
                 </Tab.Screen>
-                {/* // // // */}
-                {/* // // // */}
-                {/* // // // */}
-                {/* // // // */}
                 <Tab.Screen
                   name="TabSettings"
                   options={{
@@ -204,4 +187,8 @@ export default function App() {
       </Stack.Navigator>
     </NavigationContainer>
   );
+}
+
+{
+  /* <Fontisto name="room" size={24} color="grey" /> */
 }

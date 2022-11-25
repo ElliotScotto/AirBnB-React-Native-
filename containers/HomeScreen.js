@@ -17,7 +17,7 @@ import {
 import { ActivityIndicator } from "react-native";
 // import { ScrollView } from "react-native-web";
 import { EvilIcons } from "@expo/vector-icons";
-// import DisplayStars from "./components/DisplayStars";
+import generateStars from "../components/GenerateStars";
 //
 //
 export default function HomeScreen() {
@@ -32,11 +32,11 @@ export default function HomeScreen() {
         const response = await axios.get(
           `https://express-airbnb-api.herokuapp.com/rooms`
         );
-        console.log(response.data);
+        console.log("RESPONSE.DATA ==> ", response.data);
         setData(response.data);
         setIsloading(false);
       } catch (error) {
-        console.log(error);
+        console.log("error ==> ", error);
       }
     };
     fetchData();
@@ -53,21 +53,25 @@ export default function HomeScreen() {
       <StatusBar
         barStyle={Platform.OS === "ios" ? "dark-content" : "light-content"}
       />
-      <Image
-        style={styles.logoHome}
-        source={require("../assets/logo.png")}
-        resizeMode={"contain"}
-      />
+
       {/* <ScrollView style={styles.scrollView}> */}
       <FlatList
         data={data}
-        keyExtractor={(item) => String(item.id)}
-        renderItem={({ item, index }) => {
+        keyExtractor={(item) => String(item._id)}
+        renderItem={({ item }) => {
           return (
             <TouchableOpacity
               style={styles.card}
               onPress={() => {
-                navigation.navigate("room");
+                navigation.navigate("Room", {
+                  id: item._id,
+                  title: item.title,
+                  price: item.price,
+                  ratingValue: item.ratingValue,
+                  reviews: item.reviews,
+                  avatar: item.user.account.photo.url,
+                  description: item.description,
+                });
               }}
             >
               <View style={styles.cardTop}>
@@ -94,24 +98,21 @@ export default function HomeScreen() {
                   </View>
                   <View style={styles.roomRates}>
                     <View style={styles.stars}>
-                      <Text>
-                        <EvilIcons
-                          style={styles.iconStar}
-                          name="star"
-                          size={24}
-                          color="black"
-                        />
-                      </Text>
-                      <Text>{item.ratingValue}</Text>
+                      <Text>{generateStars(item.ratingValue)}</Text>
                     </View>
                     <View style={styles.roomReviews}>
-                      <Text>{item.reviews} reviews</Text>
+                      <Text style={styles.fontReviews}>
+                        {item.reviews} reviews
+                      </Text>
                     </View>
                   </View>
                 </View>
-
                 <View style={styles.avatar}>
-                  <Image source={{ uri: item.user.account.url }} />
+                  <Image
+                    borderRadius={"50%"}
+                    style={styles.avatarImg}
+                    source={{ uri: item.user.account.photo.url }}
+                  />
                 </View>
               </View>
             </TouchableOpacity>
@@ -122,7 +123,11 @@ export default function HomeScreen() {
   );
 }
 const styles = StyleSheet.create({
-  homeContainer: { alignItems: "center" },
+  homeContainer: {
+    alignItems: "center",
+    marginTop: 10,
+    backgroundColor: "#fff",
+  },
   logoHome: {
     marginTop: 10,
     marginBottom: 10,
@@ -132,24 +137,20 @@ const styles = StyleSheet.create({
   card: {
     width: 400,
     height: 300,
-    borderWidth: 2,
-    borderColor: "black",
-    borderStyle: "solid",
+    marginBottom: 30,
   },
   bgImage: { flex: 1, justifyContent: "flex-end" },
   cardTop: {
     height: 200,
-    borderWidth: 1,
-    borderColor: "pink",
-    borderStyle: "solid",
   },
   cardBottom: {
+    marginTop: 15,
     height: 100,
     alignItems: "center",
-    borderWidth: 1,
-    borderColor: "black",
-    borderStyle: "solid",
     flexDirection: "row",
+    paddingBottom: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: "grey",
   },
   roomPhoto: { height: 200, position: "relative" },
   titleFont: { fontSize: 20 },
@@ -157,9 +158,6 @@ const styles = StyleSheet.create({
     height: 50,
     width: "25%",
     backgroundColor: "black",
-    borderWidth: 2,
-    borderColor: "black",
-    borderStyle: "solid",
     alignItems: "center",
     justifyContent: "center",
     position: "absolute",
@@ -169,31 +167,17 @@ const styles = StyleSheet.create({
   priceFont: { color: "white", fontSize: 20 },
   roomInfos: {
     flex: 3,
-    borderWidth: 1,
-    borderColor: "purple",
-    borderStyle: "solid",
   },
   titleRoom: {
     flex: 1,
-    borderWidth: 1,
-    borderColor: "pink",
-    borderStyle: "solid",
-    alignItems: "center",
-    justifyContent: "center",
   },
   roomRates: {
     flex: 1,
     flexDirection: "row",
-    borderWidth: 1,
-    borderColor: "purple",
-    borderStyle: "solid",
     alignItems: "center",
   },
   stars: {
     flex: 1,
-    borderWidth: 1,
-    borderColor: "gold",
-    borderStyle: "solid",
     flexDirection: "row",
   },
   iconStar: {
@@ -201,17 +185,18 @@ const styles = StyleSheet.create({
   },
   roomReviews: {
     flex: 1,
-    borderWidth: 1,
-    borderColor: "green",
-    borderStyle: "solid",
   },
+  fontReviews: { color: "grey" },
   avatar: {
     flex: 1,
-    borderWidth: 1,
-    borderColor: "blue",
-    borderStyle: "solid",
     alignItems: "center",
     justifyContent: "center",
-    height: 100,
+    height: 90,
+  },
+  avatarImg: {
+    width: 90,
+    height: 90,
+    resizeMode: "contain",
+    // borderRadius: "50%",//Ne fonctionne que sur ios
   },
 });
