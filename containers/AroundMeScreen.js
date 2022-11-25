@@ -14,9 +14,7 @@ function AroundMeScreen({ navigation }) {
     const getLocationAndData = async () => {
       try {
         let { status } = await Location.requestForegroundPermissionsAsync();
-
         let response;
-
         if (status === "granted") {
           // On affiche les chambres des utilisateurs de la requête
           const location = await Location.getCurrentPositionAsync();

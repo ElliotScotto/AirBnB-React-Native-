@@ -4,19 +4,16 @@ import { useNavigation } from "@react-navigation/core";
 import axios from "axios";
 import {
   ImageBackground,
-  Button,
   Text,
   View,
   SafeAreaView,
   FlatList,
   Image,
   StyleSheet,
-  ScrollView,
   TouchableOpacity,
+  Platform,
 } from "react-native";
 import { ActivityIndicator } from "react-native";
-// import { ScrollView } from "react-native-web";
-import { EvilIcons } from "@expo/vector-icons";
 import generateStars from "../components/GenerateStars";
 //
 //
@@ -54,7 +51,6 @@ export default function HomeScreen() {
         barStyle={Platform.OS === "ios" ? "dark-content" : "light-content"}
       />
 
-      {/* <ScrollView style={styles.scrollView}> */}
       <FlatList
         data={data}
         keyExtractor={(item) => String(item._id)}
@@ -71,6 +67,8 @@ export default function HomeScreen() {
                   reviews: item.reviews,
                   avatar: item.user.account.photo.url,
                   description: item.description,
+                  latitude: item.location[1],
+                  longitude: item.location[0],
                 });
               }}
             >
@@ -80,13 +78,10 @@ export default function HomeScreen() {
                     style={styles.bgImage}
                     source={{ uri: item.photos[0].url }}
                   >
-                    {/* <View> */}
                     <View style={styles.roomPrice}>
                       <Text style={styles.priceFont}>{item.price} €</Text>
                     </View>
-                    {/* </View> */}
                   </ImageBackground>
-                  {/* <Text>coucou</Text> */}
                 </View>
               </View>
               <View style={styles.cardBottom}>
@@ -109,8 +104,11 @@ export default function HomeScreen() {
                 </View>
                 <View style={styles.avatar}>
                   <Image
-                    borderRadius={"50%"}
-                    style={styles.avatarImg}
+                    style={
+                      Platform.OS === "ios"
+                        ? styles.avatarImg
+                        : styles.avatarImgAndroid
+                    }
                     source={{ uri: item.user.account.photo.url }}
                   />
                 </View>
@@ -127,6 +125,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginTop: 10,
     backgroundColor: "#fff",
+    marginLeft: 10,
+    marginRight: 10,
   },
   logoHome: {
     marginTop: 10,
@@ -177,13 +177,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   stars: {
-    flex: 1,
     flexDirection: "row",
   },
-  iconStar: {
-    // fill: "yellow",
-  },
   roomReviews: {
+    marginLeft: 10,
     flex: 1,
   },
   fontReviews: { color: "grey" },
@@ -197,6 +194,15 @@ const styles = StyleSheet.create({
     width: 90,
     height: 90,
     resizeMode: "contain",
-    // borderRadius: "50%",//Ne fonctionne que sur ios
+    borderRadius: "50%", //Ne fonctionne que sur ios
+  },
+  avatarImgAndroid: {
+    width: 90,
+    height: 90,
+    resizeMode: "contain",
+    borderTopLeftRadius: 45,
+    borderTopRightRadius: 45,
+    borderBottomLeftRadius: 45,
+    borderBottomRightRadius: 45,
   },
 });
